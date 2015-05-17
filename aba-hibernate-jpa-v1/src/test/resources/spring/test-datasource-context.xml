@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	  xmlns:context="http://www.springframework.org/schema/context"
+	  xmlns:tx="http://www.springframework.org/schema/tx" 
+	  xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	  xmlns:p="http://www.springframework.org/schema/p"
+	  xsi:schemaLocation="http://www.springframework.org/schema/beans
+						  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+						  http://www.springframework.org/schema/context
+						  http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+						  http://www.springframework.org/schema/jdbc 
+						  http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+						  http://www.springframework.org/schema/tx 
+						  http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- ######## configuration des annotation manager ########-->
+    <context:component-scan base-package="fr.perso.couche"/>
+    
+	<!-- scripts d'initialisation de la base de données -->
+	<jdbc:initialize-database data-source="dataSource" >
+		<jdbc:script location="classpath:scripts/aba_create_schema_project.sql"/>
+		<jdbc:script location="classpath:scripts/aba_insert_project.sql"/>
+	</jdbc:initialize-database>
+	
+<!-- 	<jdbc:embedded-database id="dataSourceTest" type="H2"> -->
+<!-- 		<jdbc:script location="classpath:scripts/aba_create_schema_project.sql"/> -->
+<!-- 	</jdbc:embedded-database> -->
+	
+	<!-- Chrgement du fichier de configuration de la datasource  et hibernate-->
+	<context:property-placeholder location="classpath:config/project.properties"/>
+	
+	<!-- Declaration de bean de la datasource de type HSQLDB -->  
+	  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+			      p:driverClassName="${test.jdbc.driver}"
+		          p:url="${test.jdbc.url}"
+		          p:username="${test.jdbc.username}"
+		          p:password="${test.jdbc.password}">
+	  </bean>
+
+	<!-- Declaration de l'entity Manager Factory de Hibernate/JPA-->
+ 	<bean id="entityManagerFactory"
+        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="persistenceUnitName" value="entityManager_test_pu" />
+        <property name="persistenceXmlLocation" value="classpath*:META-INF/persistence_test.xml"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+                <!-- On ne genere pas la BDD au demarrage -->
+				<prop key="generateDdl">false</prop>
+            </props>
+        </property>
+    </bean>
+
+	<!-- Declaration de bean de la transaction manager -->
+  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="entityManagerFactory" />
+  </bean>
+   <tx:annotation-driven transaction-manager="transactionManager"/>
+   
+</beans>
