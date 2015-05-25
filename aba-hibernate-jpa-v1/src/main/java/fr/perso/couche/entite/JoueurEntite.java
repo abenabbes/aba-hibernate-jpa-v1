@@ -6,8 +6,10 @@ package fr.perso.couche.entite;
 import java.io.Serializable;
 import java.util.Calendar;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,7 +33,13 @@ import fr.perso.couche.utils.PersistanceUtils;
 @Table(name="JOUEUR")
 @NamedQueries
 ({
-	@NamedQuery(name= PersistanceUtils.REQ_RECHERCHE_LISTE_JOUEUR, query= "SELECT joueur FROM JoueurEntite joueur")
+	@NamedQuery(name= PersistanceUtils.REQ_RECHERCHE_LISTE_JOUEUR, 
+			    query= "SELECT joueur FROM JoueurEntite joueur"),
+	
+	 @NamedQuery(name= PersistanceUtils.REQ_RECHERCHE_TOUS_JOUEUR_DUNE_EQUIPE, 
+			    query= "SELECT joueur FROM JoueurEntite joueur"
+			    	+ " INNER JOIN joueur.equipe equipe"
+			    	+ " WHERE equipe.nom=:" + PersistanceUtils.NOM_EQUIPE)
 })
 public class JoueurEntite implements Serializable{
 	
@@ -62,8 +70,8 @@ public class JoueurEntite implements Serializable{
 	/** IDEQUIPE*/
 	// relation principale Joueur (many) ->  Equipe (one) 
 	// implémentée par une clé étrangère (ID_EQUIPE) dans Joueur 
-    @ManyToOne
-    @JoinColumn(name="ID_EQUIPE", referencedColumnName="ID_EQUIPE" ,nullable=false) //anotation de la clé étrangère
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="ID_EQUIPE", referencedColumnName="ID_EQUIPE", nullable=false) //anotation de la clé étrangère
 	private EquipeEntite equipe;
 
     //GETTER && SETTER

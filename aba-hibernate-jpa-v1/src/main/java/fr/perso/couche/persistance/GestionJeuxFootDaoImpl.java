@@ -12,6 +12,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -146,6 +147,32 @@ public class GestionJeuxFootDaoImpl implements IGestionJeuxFootDao {
 	public JoueurVo rechercherJoueurParId(Long id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<JoueurEntite> rechercherLesJoueursDuneEquipe(String nomEquipe) {
+		
+		log.debug("DEBUT persistance : [rechercherLesJoueursDunEquipe] - parametres d'entre : {}", nomEquipe);
+		Assert.assertNotNull("Le nom de l'equipe est obligatoire", nomEquipe);
+		
+		List<JoueurEntite> listeJoueurRetour = new ArrayList<JoueurEntite>();
+		
+		//Requête
+		Query query = entityManager.createNamedQuery(PersistanceUtils.REQ_RECHERCHE_TOUS_JOUEUR_DUNE_EQUIPE);
+		
+		//Parametres de requête
+		query.setParameter(PersistanceUtils.NOM_EQUIPE, nomEquipe);
+		
+		//Execution de la requête
+		try {
+			listeJoueurRetour = query.getResultList();
+		} catch (NoResultException e) {
+			e.getStackTrace();
+			log.debug("Exception dans la persistance");
+		}
+		
+		return listeJoueurRetour;
 	}
 
 	@Override

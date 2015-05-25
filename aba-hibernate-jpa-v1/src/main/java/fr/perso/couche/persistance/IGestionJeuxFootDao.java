@@ -6,6 +6,7 @@ package fr.perso.couche.persistance;
 import java.util.List;
 
 import fr.perso.couche.entite.EquipeEntite;
+import fr.perso.couche.entite.JoueurEntite;
 import fr.perso.couche.objectValeur.JoueurVo;
 
 /**
@@ -29,8 +30,18 @@ public interface IGestionJeuxFootDao {
 	/** 
 	 * Rechercher l'équipe d'un joueur.<br>
 	 * La recherche s'effectue par le non du joueur.
-	 * @param nom nom du joueur
+	 * @param le nom du joueur
 	 * @return une equipe
 	 */
-	public EquipeEntite rechercherEquipeDunJoueur(String nom);
+	public EquipeEntite rechercherEquipeDunJoueur(String nomJoueur);
+	
+	/**
+	 * Rechercher tous les joueurs appartenant à une equipe.<br>
+	 * La recherche s'effectue par le non de l'equipe.
+	 * @param nomEquipe : le nom de l'Equipe 
+	 * @return une liste de joueurs
+	 */
+	public List<JoueurEntite> rechercherLesJoueursDuneEquipe(final String nomEquipe	);
+	
+	
 }
