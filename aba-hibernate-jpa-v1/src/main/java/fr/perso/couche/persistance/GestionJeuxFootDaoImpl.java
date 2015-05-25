@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -15,9 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import fr.perso.couche.entite.EquipeEntite;
 import fr.perso.couche.entite.JoueurEntite;
 import fr.perso.couche.objectValeur.EquipeVo;
 import fr.perso.couche.objectValeur.JoueurVo;
+import fr.perso.couche.utils.PersistanceUtils;
 
 /**
  * @author ali
@@ -45,16 +48,14 @@ public class GestionJeuxFootDaoImpl implements IGestionJeuxFootDao {
 		//Liste retour
 		List<JoueurVo> listerJoueurRetour = new ArrayList<JoueurVo>();
 		
-		//Requête
-		StringBuilder req = new StringBuilder();
-		req.append("SELECT joueur FROM JoueurEntite joueur");
-		
-		//Resultat de requête
-		
+		//Liste de resultat de la reqête
 		List<JoueurEntite> resulListJoueur = null;
 		
+		//Execution de la requête nommée
+		Query query = entityManager.createNamedQuery(PersistanceUtils.REQ_RECHERCHE_LISTE_JOUEUR, JoueurEntite.class);
+		
 		try {
-			Query query = entityManager.createQuery(req.toString());
+			//Resultat de requête
 			resulListJoueur = query.getResultList();
 		
 		} catch (Exception e) {
@@ -66,6 +67,7 @@ public class GestionJeuxFootDaoImpl implements IGestionJeuxFootDao {
 			
 			for (JoueurEntite joueurEntite : resulListJoueur) {
 				
+				//Transformation de l'entité en Vo
 				JoueurVo joueurRetour = new JoueurVo();
 				joueurRetour.setAgeJoueur(joueurEntite.getAge());
 				joueurRetour.setEmailJoueur(joueurEntite.getEmail());
@@ -91,6 +93,53 @@ public class GestionJeuxFootDaoImpl implements IGestionJeuxFootDao {
 		
 		log.debug("FIN persistance - [listerTousLesJoueurs]");
 		return listerJoueurRetour;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<EquipeEntite> listerTousLesEquipess() {
+		log.debug("DEBUT persistance - [listerTousLesJoueurs]");
+		
+		//Liste de resultat de la reqête
+		List<EquipeEntite> resulListEquipe = null;
+		
+		//Execution de la requête nommée
+		Query query = entityManager.createNamedQuery(PersistanceUtils.REQ_RECHERCHE_LISTE_EQUIPE, EquipeEntite.class);
+		
+		
+		try {
+			//Resultat de requête
+			resulListEquipe = query.getResultList();
+		
+		} catch (Exception e) {
+			e.getStackTrace();
+			log.debug("Exception dans la persistance");
+		}
+		
+		return resulListEquipe;
+	}
+
+	@Override
+	public EquipeEntite rechercherEquipeDunJoueur(String nom) {
+
+		log.debug("DEBUT persistance - [rechercherEquipeDunJoueur]");
+		
+		//Retour de la recherche 
+		EquipeEntite equipeRetour = null;
+		
+		//Requête nommmé de recherche
+		Query query = entityManager.createNamedQuery(PersistanceUtils.REQ_RECHERCHER_EQUIPE_DU_JOUEUR);
+		query.setParameter(PersistanceUtils.NOM_JOUEUR, nom);
+		
+		try {
+			
+			equipeRetour = (EquipeEntite) query.getSingleResult();
+			
+		} catch (NoResultException e) {
+			e.getStackTrace();
+			log.debug("Exception dans la persistance");
+		}
+		return equipeRetour;
 	}
 
 	@Override

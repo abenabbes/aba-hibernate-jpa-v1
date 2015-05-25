@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class AbstractTest {
 	
 	/**Logger de la classe.*/
-	private static Logger log = LoggerFactory.getLogger(AbstractTest.class);
+	protected static Logger log = LoggerFactory.getLogger(AbstractTest.class);
 	
 	/**
 	 * Méthode lancé avant les tests de la classe.

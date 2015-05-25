@@ -9,16 +9,19 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import fr.perso.couche.utils.PersistanceUtils;
 
 /**
  * @author ali
@@ -26,6 +29,19 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name="EQUIPE")
+@NamedQueries
+({
+	@NamedQuery(name= PersistanceUtils.REQ_RECHERCHE_LISTE_EQUIPE, 
+			    query= "SELECT equipe FROM EquipeEntite equipe"
+			    ),
+			
+	@NamedQuery(name=PersistanceUtils.REQ_RECHERCHER_EQUIPE_DU_JOUEUR, 
+	            query=" SELECT equipe"
+	            	+ " FROM EquipeEntite equipe"
+	            	+ " INNER JOIN equipe.listeJoueurs joueur"
+	            	+ " WHERE joueur.nom=:" + PersistanceUtils.NOM_JOUEUR
+	            )
+})
 public class EquipeEntite implements Serializable{
 	
 	//ATTRIBUTS
@@ -56,7 +72,7 @@ public class EquipeEntite implements Serializable{
 	// cascade insertion Equipe -> insertion Joueur 
     // cascade maj Equipe -> maj Joueur 
     // cascade suppression Equipe -> suppression Joueur 
-    @OneToMany(mappedBy="equipe", cascade= CascadeType.ALL)
+    @OneToMany(mappedBy="equipe", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<JoueurEntite> listeJoueurs;
 
     //GETTER && SETTER

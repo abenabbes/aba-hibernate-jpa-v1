@@ -13,11 +13,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.validator.constraints.Email;
+
+import fr.perso.couche.utils.PersistanceUtils;
 
 /**
  * @author ali
@@ -25,6 +29,10 @@ import org.hibernate.validator.constraints.Email;
  */
 @Entity
 @Table(name="JOUEUR")
+@NamedQueries
+({
+	@NamedQuery(name= PersistanceUtils.REQ_RECHERCHE_LISTE_JOUEUR, query= "SELECT joueur FROM JoueurEntite joueur")
+})
 public class JoueurEntite implements Serializable{
 	
 	//ATTRIBUTS
@@ -55,7 +63,7 @@ public class JoueurEntite implements Serializable{
 	// relation principale Joueur (many) ->  Equipe (one) 
 	// implémentée par une clé étrangère (ID_EQUIPE) dans Joueur 
     @ManyToOne
-    @JoinColumn(name="ID_EQUIPE", referencedColumnName="ID_EQUIPE", nullable=false) //anotation de la clé étrangère
+    @JoinColumn(name="ID_EQUIPE", referencedColumnName="ID_EQUIPE" ,nullable=false) //anotation de la clé étrangère
 	private EquipeEntite equipe;
 
     //GETTER && SETTER
